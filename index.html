@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f5c63">
+<title>Proof of Address Letter Generator</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <img src="favicon.svg" alt="" width="40" height="40">
+    <div>
+      <h1>Proof of address letter</h1>
+      <p>Write a clear declaration of residence. Everything stays in your browser.</p>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <form id="form" class="panel" autocomplete="off" novalidate>
+
+    <details class="card" open>
+      <summary>Your situation</summary>
+      <p class="hint">Tick everything that applies. The letter changes to explain your circumstances. Tick nothing for a standard declaration.</p>
+      <div class="tiles">
+        <label class="tile"><input type="checkbox" id="sc-noBills"><span><b>No utility bills</b>I have no bills or bank statements in my name for this address.</span></label>
+        <label class="tile"><input type="checkbox" id="sc-noContract"><span><b>No written contract</b>My landlord and I have a verbal agreement.</span></label>
+        <label class="tile"><input type="checkbox" id="sc-longTerm"><span><b>Long-term resident</b>I have lived here for years. The letter states how long.</span></label>
+        <label class="tile"><input type="checkbox" id="sc-host"><span><b>Living with family or a host</b>Bills and agreements are in their name.</span></label>
+      </div>
+      <label id="evidenceWrap" hidden>Other evidence you can provide (optional)
+        <input id="evidence" placeholder="e.g. health card, school letters, mail from a bank">
+      </label>
+    </details>
+
+    <details class="card" open>
+      <summary>About you</summary>
+      <label>Full name <input id="name" autocomplete="name"></label>
+      <div class="row">
+        <label>Date of birth <input id="dob" type="date"></label>
+        <label>ID type
+          <select id="idType"><option value="national">National ID</option><option value="passport">Passport</option></select>
+        </label>
+      </div>
+      <label>ID or passport number <input id="idNumber"></label>
+      <div class="row">
+        <label>Phone <input id="phone" type="tel" autocomplete="tel"></label>
+        <label>Personal email <input id="email" type="email" autocomplete="email"></label>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>Where you live</summary>
+      <label>Address line 1 <input id="line1" autocomplete="address-line1"></label>
+      <label>Address line 2 (optional) <input id="line2" autocomplete="address-line2"></label>
+      <div class="row">
+        <label>City or town <input id="city" autocomplete="address-level2"></label>
+        <label>State or region <input id="region" autocomplete="address-level1"></label>
+      </div>
+      <div class="row">
+        <label>Postal code <input id="postcode" autocomplete="postal-code"></label>
+        <label>Country <input id="country" autocomplete="country-name"></label>
+      </div>
+      <label>Living here since <input id="since" type="date"></label>
+      <label class="check"><input type="checkbox" id="permSame"> Permanent address is the same as above</label>
+      <label id="permWrap">Permanent address (if different)
+        <textarea id="permanent" rows="3"></textarea>
+      </label>
+    </details>
+
+    <details class="card">
+      <summary>Spouse (optional)</summary>
+      <label>Full name <input id="sname"></label>
+      <div class="row">
+        <label>Mobile <input id="smobile" type="tel"></label>
+        <label>Email <input id="semail" type="email"></label>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>Landlord or householder</summary>
+      <p class="hint" id="lhint">Optional. Add their details if they can confirm you live here. They sign the printed letter.</p>
+      <label>Printed name <input id="lname"></label>
+      <div class="row">
+        <label>Mobile number <input id="lmobile" type="tel"></label>
+        <label>Email address <input id="lemail" type="email"></label>
+      </div>
+      <label>Relationship to you <input id="lrel" value="Landlord"></label>
+    </details>
+
+    <details class="card">
+      <summary>Letter details</summary>
+      <label>Addressed to (optional) <input id="recipient" placeholder="To whom it may concern"></label>
+      <label>Purpose (optional) <input id="purpose" placeholder="e.g. opening a bank account"></label>
+      <div class="row">
+        <label>Letter date <input id="date" type="date"></label>
+        <label>Reference (automatic) <input id="ref" readonly></label>
+      </div>
+    </details>
+
+    <button type="reset" class="link">Clear the form</button>
+  </form>
+
+  <section class="desk">
+    <div class="toolbar">
+      <button type="button" id="btnPdf" class="primary">Download PDF</button>
+      <button type="button" id="btnDocx">Download DOCX</button>
+      <button type="button" id="btnPrint">Print</button>
+      <button type="button" id="btnText">Text</button>
+    </div>
+    <p id="msg" class="msg" role="alert"></p>
+    <article id="letter" class="paper" aria-label="Letter preview"></article>
+  </section>
+</main>
+
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="poa-core.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

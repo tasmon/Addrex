@@ -1,0 +1,98 @@
+:root{
+  --desk:#e8eef1; --panel:#fff; --ink:#14212b; --muted:#58696f; --line:#cfd9df;
+  --accent:#0f5c63; --accent-ink:#fff; --soft:#e1eff0; --err:#a3261f;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--desk:#0e151a; --panel:#17222a; --ink:#e8eef2; --muted:#9bacb6; --line:#2b3a44; --accent:#58b4bc; --accent-ink:#0b1519; --soft:#1d3238; --err:#ff8f86}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans)}
+
+.bar{background:var(--panel);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1240px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.bar img{border-radius:10px}
+.bar h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
+.bar p{margin:0;color:var(--muted);font-size:.9rem}
+
+.layout{max-width:1240px;margin:0 auto;padding:20px;display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:28px;align-items:start}
+.panel{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0 16px 16px}
+.card>summary{cursor:pointer;font-weight:650;font-size:1rem;padding:14px 0;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.card>summary::-webkit-details-marker{display:none}
+.card>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+.card[open]>summary::after{transform:rotate(-135deg)}
+.card>label,.card>.row,.card>.tiles{margin-top:10px}
+.card>.hint{margin:0}
+
+label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);flex:1;min-width:0}
+input,select,textarea{font:inherit;font-size:.95rem;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical}
+select option{color:#111}
+input[readonly]{color:var(--muted);background:var(--desk)}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bad{border-color:var(--err)!important}
+.row{display:flex;gap:10px}
+.hint{font-size:.85rem;color:var(--muted)}
+.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);flex:none}
+.check input{width:auto}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{flex-direction:row;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--muted);font-size:.8rem;line-height:1.35}
+.tile input{width:auto;margin-top:2px;accent-color:var(--accent)}
+.tile b{display:block;color:var(--ink);font-size:.9rem;margin-bottom:2px}
+.tile:has(input:checked){background:var(--soft);border-color:var(--accent)}
+
+button{font:inherit;font-weight:550;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.link{border:0;background:none;color:var(--muted);text-decoration:underline;align-self:flex-start;padding:4px 2px}
+
+.desk{position:sticky;top:12px;min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.msg{min-height:1.4em;margin:8px 2px;font-size:.9rem;color:var(--err)}
+.desk .paper{max-height:calc(100vh - 150px);overflow:auto}
+
+/* Letter */
+.paper{background:#fff;color:#161616;font-family:var(--serif);font-size:15px;line-height:1.55;max-width:794px;min-height:1000px;margin:0 auto;padding:52px 60px 36px;box-shadow:0 1px 2px rgba(0,0,0,.2),0 14px 34px rgba(0,0,0,.16);display:flex;flex-direction:column}
+.paper .head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-bottom:14px;border-bottom:3px double #1c3b40}
+.paper h2{margin:0;font-size:1.9rem;line-height:1.1;color:#1c3b40}
+.paper .sub{margin:6px 0 0;font:.85rem var(--sans);color:#555}
+.paper .meta{display:grid;grid-template-columns:auto auto;gap:1px 10px;margin:0;font:.78rem/1.5 var(--sans);text-align:right}
+.paper .meta dt{color:#666;font-weight:600}
+.paper .meta dd{margin:0}
+.paper .to{margin:24px 0 16px}
+.paper section{margin:0 0 16px;break-inside:avoid}
+.paper h3{margin:0 0 6px;padding-bottom:3px;font:700 .85rem var(--sans);color:#1c3b40;border-bottom:1px solid #b8c4c8}
+.paper dl{display:grid;grid-template-columns:150px 1fr;gap:3px 14px;margin:0}
+.paper dt{font:600 .82rem var(--sans);color:#555;padding-top:2px}
+.paper dd{margin:0}
+.paper p{margin:0 0 10px}
+.paper .sigs{display:flex;gap:40px;flex-wrap:wrap;margin-top:28px;break-inside:avoid}
+.paper .sigs>div{flex:1;min-width:200px}
+.paper .sign{font:italic 1.5rem "Brush Script MT","Segoe Script",cursive;min-height:2.4rem;border-bottom:1px solid #161616}
+.paper .blank{min-height:2.4rem;border-bottom:1px solid #161616}
+.paper .cap{display:block;font:.78rem/1.4 var(--sans);color:#444;margin-top:3px}
+.paper .foot{margin-top:auto;padding-top:26px}
+.paper .note{margin:0;padding-top:8px;border-top:1px solid #b8c4c8;font:.72rem/1.45 var(--sans);color:#555}
+.paper .empty{color:#9a9a9a}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;padding:14px}
+  .desk{position:static}.desk .paper{max-height:none}
+  .paper{padding:26px 20px;min-height:0}
+  .paper .head{flex-direction:column}.paper .meta{text-align:left}
+  .paper dl{grid-template-columns:110px 1fr}
+}
+@media (max-width:480px){.tiles,.row{grid-template-columns:1fr;flex-direction:column}}
+@media print{
+  body{background:#fff}
+  .bar,.panel,.toolbar,.msg{display:none}
+  .layout{display:block;padding:0;max-width:none}
+  .desk{position:static}
+  .desk .paper{max-height:none;overflow:visible}
+  .paper{box-shadow:none;max-width:none;padding:0;min-height:0}
+  .paper,.paper *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:A4;margin:18mm}
+}
