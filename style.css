@@ -47,14 +47,26 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 button{font:inherit;font-weight:550;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 button:hover{border-color:var(--accent)}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.credit{margin:0;font-size:.85rem;word-break:break-all}
-.credit a{color:var(--accent)}
 button.link{border:0;background:none;color:var(--muted);text-decoration:underline;align-self:flex-start;padding:4px 2px}
 
 .desk{position:sticky;top:12px;min-width:0}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
 .msg{min-height:1.4em;margin:8px 2px;font-size:.9rem;color:var(--err)}
 .desk .paper{max-height:calc(100vh - 150px);overflow:auto}
+
+/* Terms dialog */
+dialog#terms{width:min(640px,calc(100% - 24px));max-height:calc(100% - 24px);padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35);flex-direction:column;gap:12px}
+dialog#terms[open]{display:flex}
+dialog#terms::backdrop{background:rgba(8,16,22,.72)}
+dialog#terms.fallback{position:fixed;inset:0;margin:auto;height:fit-content;z-index:100}
+dialog#terms h2{margin:0;font-size:1.3rem}
+dialog#terms p{margin:0}
+.terms-body{flex:1 1 auto;min-height:120px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:4px 14px 10px;font-size:.9rem}
+.terms-body h3{margin:14px 0 4px;font-size:.95rem}
+.terms-body p{color:var(--muted);margin:0 0 6px}
+.dialog-actions{display:flex;justify-content:flex-end}
+button:disabled{opacity:.5;cursor:not-allowed}
+.check input:disabled+*{opacity:.6}
 
 /* Letter */
 .paper{background:#fff;color:#161616;font-family:var(--serif);font-size:15px;line-height:1.55;max-width:794px;min-height:1000px;margin:0 auto;padding:52px 60px 36px;box-shadow:0 1px 2px rgba(0,0,0,.2),0 14px 34px rgba(0,0,0,.16);display:flex;flex-direction:column}

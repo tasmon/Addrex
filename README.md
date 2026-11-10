@@ -15,7 +15,7 @@ It does **not** create utility bills, bank statements, tenancy agreements, gover
 ## Features
 
 - **Live preview** of an A4 letter that updates as you type
-- **Export** to PDF (selectable text, page footers), DOCX (real tables, page numbers) or plain text, plus browser **Print**
+- **Export** to PDF (selectable text, page footers) or DOCX (real tables, page numbers). The live app address is printed at the very bottom of every exported page
 - **Scenario selection**: tick any mix of *no utility bills*, *no written contract (verbal agreement)*, *long-term resident* and *living with family or a host*. The letter adds a "Circumstances" section, adapts its subtitle and landlord wording, and calculates length of residence
 - **Form fields**: full name, date of birth, National ID or passport number, phone, personal email, current address, permanent address, move-in date, spouse (name, mobile, email), landlord or householder (printed name, mobile, email, relationship), recipient, purpose
 - **Landlord confirmation block** with its own signature line, required automatically for verbal agreements and host situations
@@ -23,6 +23,7 @@ It does **not** create utility bills, bank statements, tenancy agreements, gover
 - **Validation** for required fields, email format and move-in dates in the future
 - Responsive layout, dark mode, keyboard-friendly, print stylesheet
 - Manual **light/dark mode** toggle that remembers your choice (follows your system setting until you pick)
+- **Terms of use** dialog on first visit: the user must scroll to the end and accept before using the app (the acceptance is remembered in the browser)
 - Blank signature lines on the letter, for signing by hand after printing
 - Site icon (`favicon.svg` and an Apple touch icon)
 
@@ -61,14 +62,13 @@ It is a static site, so it works on **GitHub Pages**, Vercel, Netlify or any sta
 
 ## How it works
 
-`poa-core.js` has no DOM access. It builds one **document model** (title, metadata, sections, signature blocks, note) from the form data, then renders that same model four ways:
+`poa-core.js` has no DOM access. It builds one **document model** (title, metadata, sections, signature blocks, note) from the form data, then renders that same model three ways:
 
 | Output | How it is produced |
 | --- | --- |
 | Preview | Escaped HTML string |
 | PDF | jsPDF vector text on A4 with automatic page breaks and footers |
 | DOCX | Hand-built OOXML packaged in a ZIP with a small built-in writer, no library |
-| Text | Plain text |
 
 Because every output comes from the same model, they stay consistent. To change the wording or sections of the letter, edit `buildDoc()` in `poa-core.js`.
 
@@ -77,13 +77,15 @@ The core file also works in Node (`require('./poa-core.js')`), which is handy fo
 ## Customising
 
 - **Letter wording and sections**: `buildDoc()` in `poa-core.js`
+- **Terms of use**: the text is in the `<dialog id="terms">` block in `index.html`. Change `TVER` in `script.js` to make everyone accept again after you edit it
+- **Address in exported files**: `APP_URL` in `poa-core.js`
 - **Colours and typography**: CSS variables at the top of `style.css`
 - **Scenarios**: add a checkbox tile in `index.html`, read it in `scenarios()` in `script.js`, and add its paragraph in `buildDoc()`
 - **Paper size**: the PDF and print layouts use A4. Change `format` in `toPDF()` and `@page` in `style.css` for Letter
 
 ## Known limitations
 
-- **PDF and non-Latin text**: the PDF export uses jsPDF's built-in fonts, which cannot embed scripts such as Bangla or Arabic. When the app detects those characters it tells you to use **Print → Save as PDF** or the DOCX export, both of which handle any script.
+- **PDF and non-Latin text**: the PDF export uses jsPDF's built-in fonts, which cannot embed scripts such as Bangla or Arabic. When the app detects those characters it tells you to use the DOCX export instead, which handles any script.
 - **DOCX fonts**: the document asks for Georgia and Calibri. Word substitutes similar fonts if they are missing.
 - Signature lines are left blank on purpose. Print the letter and sign it by hand. There is no digital signature.
 - Data is not saved between visits. Reloading the page clears the form.

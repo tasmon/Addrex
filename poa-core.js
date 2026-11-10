@@ -1,6 +1,7 @@
 /* Document model + exporters (HTML preview, text, PDF, DOCX). No DOM access. */
 (function (root) {
   'use strict';
+  var APP_URL = 'https://tasmon.github.io/Addrex';
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   function pad(n) { return String(n).padStart(2, '0'); }
   function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
@@ -95,6 +96,7 @@
 
     return {
       ref: d.ref,
+      appUrl: APP_URL, // shown in exported PDF/DOCX footers only, not in the preview
       title: 'Proof of Address',
       subtitle: subtitle,
       meta: [['Reference', d.ref], ['Date issued', fmtDate(d.date)], ['Generated', d.stamp]],
@@ -128,22 +130,6 @@
         esc(g.caption[1]) + '<br>' + esc(g.caption[2]) + '</span></div>';
     }).join('') + '</div>';
     return h + '<div class="foot"><p class="note">' + esc(doc.note) + '</p></div>';
-  }
-
-  /* ---------- Plain text ---------- */
-  function toText(doc) {
-    var o = [doc.title, doc.subtitle, ''];
-    doc.meta.forEach(function (m) { o.push(m[0] + ': ' + m[1]); });
-    o.push('', doc.to, '');
-    doc.sections.forEach(function (s) {
-      o.push(s.h);
-      (s.rows || []).forEach(function (r) { o.push('  ' + r[0] + ': ' + r[1].replace(/\n/g, ', ')); });
-      (s.paras || []).forEach(function (p) { o.push('  ' + p); });
-      o.push('');
-    });
-    doc.sigs.forEach(function (g) { o.push('Signature: ______________________', g.caption.join('\n'), ''); });
-    o.push(doc.note);
-    return o.join('\n');
   }
 
   /* ---------- PDF (vector text via jsPDF) ---------- */
@@ -221,10 +207,12 @@
     var n = pdf.getNumberOfPages();
     for (var p = 1; p <= n; p++) {
       pdf.setPage(p);
-      hline(M, W - M, H - 15, 0.2, RULE);
+      hline(M, W - M, H - 17, 0.2, RULE);
       font('helvetica', 'normal', 7.5, GREY);
-      pdf.text('Reference ' + doc.ref, M, H - 10.5);
-      pdf.text('Page ' + p + ' of ' + n, W - M, H - 10.5, { align: 'right' });
+      pdf.text('Reference ' + doc.ref, M, H - 12.5);
+      pdf.text('Page ' + p + ' of ' + n, W - M, H - 12.5, { align: 'right' });
+      font('helvetica', 'normal', 7.5, TEAL);
+      pdf.textWithLink(doc.appUrl, (W - pdf.getTextWidth(doc.appUrl)) / 2, H - 8.5, { url: doc.appUrl });
     }
     return pdf;
   }
@@ -301,10 +289,11 @@
       '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>';
 
     var fr = { font: 'Calibri', sz: 15, color: '666666' };
-    var footerXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr ' + NS + '><w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="B8C4C8"/></w:pBdr><w:jc w:val="center"/></w:pPr>' +
+    var footerXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr ' + NS + '><w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="6" w:color="B8C4C8"/></w:pBdr><w:spacing w:before="0" w:after="40"/><w:jc w:val="center"/></w:pPr>' +
       run('Reference ' + doc.ref + '   |   Page ', fr) +
       '<w:fldSimple w:instr=" PAGE "><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:color w:val="666666"/><w:sz w:val="15"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple>' + run(' of ', fr) +
-      '<w:fldSimple w:instr=" NUMPAGES "><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:color w:val="666666"/><w:sz w:val="15"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple></w:p></w:ftr>';
+      '<w:fldSimple w:instr=" NUMPAGES "><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:color w:val="666666"/><w:sz w:val="15"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple></w:p>' +
+      '<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr><w:hyperlink r:id="rId1" w:history="1"><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:color w:val="0F5C63"/><w:sz w:val="15"/><w:szCs w:val="15"/><w:u w:val="single"/></w:rPr><w:t>' + xe(doc.appUrl) + '</w:t></w:r></w:hyperlink></w:p></w:ftr>';
 
     var stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles ' + NS + '><w:docDefaults><w:rPrDefault><w:rPr>' +
       '<w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:lang w:val="en-GB"/></w:rPr></w:rPrDefault></w:docDefaults>' +
@@ -317,7 +306,8 @@
       { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/styles" Target="styles.xml"/><Relationship Id="rId2" Type="' + rel + '/footer" Target="footer1.xml"/></Relationships>' },
       { name: 'word/document.xml', data: documentXml },
       { name: 'word/styles.xml', data: stylesXml },
-      { name: 'word/footer1.xml', data: footerXml }
+      { name: 'word/footer1.xml', data: footerXml },
+      { name: 'word/_rels/footer1.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/hyperlink" Target="' + xe(doc.appUrl) + '" TargetMode="External"/></Relationships>' }
     ];
   }
 
@@ -352,6 +342,6 @@
   }
   function toDOCX(doc) { return zip(docxFiles(doc)); }
 
-  var api = { makeRef: makeRef, fmtStamp: fmtStamp, buildDoc: buildDoc, toHTML: toHTML, toText: toText, toPDF: toPDF, pdfSupports: pdfSupports, toDOCX: toDOCX };
+  var api = { makeRef: makeRef, fmtStamp: fmtStamp, buildDoc: buildDoc, toHTML: toHTML, toPDF: toPDF, pdfSupports: pdfSupports, toDOCX: toDOCX };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.POA = api;
 })(typeof window !== 'undefined' ? window : this);

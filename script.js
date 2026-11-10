@@ -66,20 +66,14 @@
   $('btnPdf').addEventListener('click', function () {
     var doc = prepare(); if (!doc) return;
     var J = window.jspdf && window.jspdf.jsPDF;
-    if (!J) { msg.textContent = 'The PDF library did not load. Use Print and choose Save as PDF.'; return; }
-    if (!POA.pdfSupports(doc)) { msg.textContent = 'This PDF builder cannot embed some characters you typed (for example Bangla or Arabic). Use Print and choose Save as PDF, or download the DOCX.'; return; }
+    if (!J) { msg.textContent = 'The PDF library did not load. Please download the DOCX instead.'; return; }
+    if (!POA.pdfSupports(doc)) { msg.textContent = 'This PDF builder cannot embed some characters you typed (for example Bangla or Arabic). Please download the DOCX instead.'; return; }
     POA.toPDF(doc, J).save('Proof-of-Address-' + doc.ref + '.pdf');
   });
   $('btnDocx').addEventListener('click', function () {
     var doc = prepare(); if (!doc) return;
     save(new Blob([POA.toDOCX(doc)], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), 'Proof-of-Address-' + doc.ref + '.docx');
   });
-  $('btnText').addEventListener('click', function () {
-    var doc = prepare(); if (!doc) return;
-    save(new Blob([POA.toText(doc)], { type: 'text/plain;charset=utf-8' }), 'Proof-of-Address-' + doc.ref + '.txt');
-  });
-  $('btnPrint').addEventListener('click', function () { if (prepare()) window.print(); });
-
   $('form').addEventListener('reset', function () {
     setTimeout(function () { $('date').value = today(); msg.textContent = ''; document.querySelectorAll('.bad').forEach(function (n) { n.classList.remove('bad'); }); refresh(); render(); }, 0);
   });
@@ -102,6 +96,48 @@
     try { localStorage.setItem(KEY, next); } catch (e) {}
   });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) { if (!stored()) applyTheme(e.matches ? 'dark' : 'light'); });
+
+  // Terms of use: modal on first visit, must be read to the end and accepted
+  var dlg = $('terms'), body = $('termsBody'), ok = $('termsOk'), accept = $('termsAccept'), TKEY = 'poa-terms', TVER = 'v1';
+  var shell = [document.querySelector('.bar'), document.querySelector('.layout')];
+  var accepted = false, reading = false;
+  function termsStored() { try { return localStorage.getItem(TKEY) === TVER; } catch (e) { return false; } }
+  function setInert(on) { shell.forEach(function (n) { if (on) n.setAttribute('inert', ''); else n.removeAttribute('inert'); }); }
+  function atEnd() { return body.scrollHeight - body.clientHeight - body.scrollTop <= 4; }
+  function checkRead() {
+    if (accepted || !atEnd()) return;
+    ok.disabled = false; $('termsNote').hidden = true;
+  }
+  function openTerms(mustAccept) {
+    reading = !mustAccept;                       // re-reading after acceptance
+    $('termsCheckWrap').hidden = $('termsNote').hidden = reading;
+    accept.textContent = reading ? 'Close' : 'Accept and continue';
+    accept.disabled = !reading; ok.checked = reading; ok.disabled = true;
+    $('termsNote').hidden = reading;
+    body.scrollTop = 0;
+    setInert(true);
+    if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else { dlg.setAttribute('open', ''); dlg.classList.add('fallback'); }
+    if (!reading) setTimeout(checkRead, 0);
+    body.focus();
+  }
+  function closeTerms() {
+    setInert(false);
+    if (dlg.close && dlg.showModal) dlg.close(); else dlg.removeAttribute('open');
+  }
+  body.addEventListener('scroll', checkRead);
+  window.addEventListener('resize', checkRead);
+  ok.addEventListener('change', function () { accept.disabled = !ok.checked; });
+  accept.addEventListener('click', function () {
+    if (!reading) { if (!ok.checked) return; accepted = true; try { localStorage.setItem(TKEY, TVER); } catch (e) {} }
+    closeTerms();
+  });
+  dlg.addEventListener('cancel', function (e) { if (!accepted && !reading) e.preventDefault(); });
+  dlg.addEventListener('close', function () {
+    if (accepted || reading) setInert(false);
+    else if (!dlg.classList.contains('fallback')) openTerms(true);
+  });
+  $('termsLink').addEventListener('click', function () { openTerms(false); });
+  if (termsStored()) accepted = true; else openTerms(true);
 
   $('date').value = today();
   refresh(); render();

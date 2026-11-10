@@ -108,20 +108,42 @@
     </details>
 
     <button type="reset" class="link">Clear the form</button>
-    <p class="credit"><a href="https://tasmon.github.io/Addrex" target="_blank" rel="noopener noreferrer">https://tasmon.github.io/Addrex</a></p>
+    <button type="button" id="termsLink" class="link">Terms of use</button>
   </form>
 
   <section class="desk">
     <div class="toolbar">
       <button type="button" id="btnPdf" class="primary">Download PDF</button>
       <button type="button" id="btnDocx">Download DOCX</button>
-      <button type="button" id="btnPrint">Print</button>
-      <button type="button" id="btnText">Text</button>
     </div>
     <p id="msg" class="msg" role="alert"></p>
     <article id="letter" class="paper" aria-label="Letter preview"></article>
   </section>
 </main>
+
+<dialog id="terms" aria-labelledby="termsTitle" aria-describedby="termsHint">
+  <h2 id="termsTitle">Terms of use</h2>
+  <p id="termsHint" class="hint">Please read all of the terms, then accept to continue. Version 1.0, 10 November 2026.</p>
+  <div id="termsBody" class="terms-body" tabindex="0" role="region" aria-label="Terms of use text">
+    <h3>1. What this app does</h3>
+    <p>This app creates a self-declaration letter from the details you type in. The letter is written by you. It is not an official document and is not issued, checked or endorsed by any government agency, bank, utility company, landlord or other authority.</p>
+    <h3>2. Your responsibility</h3>
+    <p>You may use this app only to describe your own true circumstances. Everything you enter must be accurate and complete. A landlord or householder named in the letter must be a real person who has agreed to be named and who will confirm the letter if they are contacted.</p>
+    <h3>3. What you must not do</h3>
+    <p>Do not use this app to misrepresent where someone lives, to imitate an official document, letterhead or seal, to make a letter about another person without their knowledge, or to deceive any organisation. False or forged documents can be a crime and may have serious legal consequences.</p>
+    <h3>4. No guarantee of acceptance</h3>
+    <p>Each organisation decides which documents it accepts. Many require official documents such as a utility bill, bank statement or tenancy agreement. A letter made with this app may be refused. Nothing here is legal advice.</p>
+    <h3>5. Your data</h3>
+    <p>The app works inside your browser. What you type is not sent to any server and is not saved by the app. The app remembers only your light or dark mode choice and that you accepted these terms. The files you download contain personal details such as ID numbers and contact information, so keep them safe and share them only with people you trust.</p>
+    <h3>6. No warranty and limit of liability</h3>
+    <p>The app is provided as it is, without any promise that it is free of errors or suitable for your purpose. To the extent the law allows, the authors are not responsible for any loss or problem that results from using the app or the letters it creates.</p>
+    <h3>7. Changes</h3>
+    <p>These terms may change. If they do, you will be asked to accept the new version.</p>
+  </div>
+  <label class="check" id="termsCheckWrap"><input type="checkbox" id="termsOk" disabled> I have read and accept the terms of use</label>
+  <p id="termsNote" class="hint">Scroll to the end of the terms to enable this box. If you do not agree, please close this page.</p>
+  <div class="dialog-actions"><button type="button" id="termsAccept" class="primary" disabled>Accept and continue</button></div>
+</dialog>
 
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="poa-core.js"></script>
