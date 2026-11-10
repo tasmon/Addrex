@@ -22,7 +22,11 @@ It does **not** create utility bills, bank statements, tenancy agreements, gover
 - **Automatic reference number** in the form `POA-YYYYMMDD-HHMMSS`, refreshed on every export or print
 - **Validation** for required fields, email format and move-in dates in the future
 - Responsive layout, dark mode, keyboard-friendly, print stylesheet
+- Manual **light/dark mode** toggle that remembers your choice (follows your system setting until you pick)
+- Blank signature lines on the letter, for signing by hand after printing
 - Site icon (`favicon.svg` and an Apple touch icon)
+
+Live app: https://tasmon.github.io/Addrex
 
 ## Quick start
 
@@ -80,8 +84,8 @@ The core file also works in Node (`require('./poa-core.js')`), which is handy fo
 ## Known limitations
 
 - **PDF and non-Latin text**: the PDF export uses jsPDF's built-in fonts, which cannot embed scripts such as Bangla or Arabic. When the app detects those characters it tells you to use **Print → Save as PDF** or the DOCX export, both of which handle any script.
-- **DOCX fonts**: the document asks for Georgia, Calibri and Brush Script MT. Word substitutes similar fonts if they are missing.
-- The handwritten-style signature is a typed name in a script font. It is a placeholder for the printed copy, not a digital signature.
+- **DOCX fonts**: the document asks for Georgia and Calibri. Word substitutes similar fonts if they are missing.
+- Signature lines are left blank on purpose. Print the letter and sign it by hand. There is no digital signature.
 - Data is not saved between visits. Reloading the page clears the form.
 
 ## Privacy

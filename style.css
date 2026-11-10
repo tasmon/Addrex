@@ -1,18 +1,19 @@
 :root{
   --desk:#e8eef1; --panel:#fff; --ink:#14212b; --muted:#58696f; --line:#cfd9df;
-  --accent:#0f5c63; --accent-ink:#fff; --soft:#e1eff0; --err:#a3261f;
+  --accent:#0f5c63; --accent-ink:#fff; --soft:#e1eff0; --err:#a3261f; color-scheme:light;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
   --serif:Georgia,"Times New Roman",serif;
 }
-@media (prefers-color-scheme:dark){
-  :root{--desk:#0e151a; --panel:#17222a; --ink:#e8eef2; --muted:#9bacb6; --line:#2b3a44; --accent:#58b4bc; --accent-ink:#0b1519; --soft:#1d3238; --err:#ff8f86}
-}
+:root[data-theme="dark"]{--desk:#0e151a; --panel:#17222a; --ink:#e8eef2; --muted:#9bacb6; --line:#2b3a44; --accent:#58b4bc; --accent-ink:#0b1519; --soft:#1d3238; --err:#ff8f86; color-scheme:dark;}
+@media (prefers-color-scheme:dark){:root:not([data-theme]){--desk:#0e151a; --panel:#17222a; --ink:#e8eef2; --muted:#9bacb6; --line:#2b3a44; --accent:#58b4bc; --accent-ink:#0b1519; --soft:#1d3238; --err:#ff8f86; color-scheme:dark;}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans)}
 
 .bar{background:var(--panel);border-bottom:1px solid var(--line)}
 .bar-in{max-width:1240px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
 .bar img{border-radius:10px}
+.bar-in .theme{margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;font-size:.85rem}
+.theme[aria-pressed="true"]{background:var(--soft);border-color:var(--accent)}
 .bar h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
 .bar p{margin:0;color:var(--muted);font-size:.9rem}
 
@@ -29,7 +30,6 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans)}
 label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);flex:1;min-width:0}
 input,select,textarea{font:inherit;font-size:.95rem;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
 textarea{resize:vertical}
-select option{color:#111}
 input[readonly]{color:var(--muted);background:var(--desk)}
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bad{border-color:var(--err)!important}
@@ -47,6 +47,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 button{font:inherit;font-weight:550;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 button:hover{border-color:var(--accent)}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.credit{margin:0;font-size:.85rem;word-break:break-all}
+.credit a{color:var(--accent)}
 button.link{border:0;background:none;color:var(--muted);text-decoration:underline;align-self:flex-start;padding:4px 2px}
 
 .desk{position:sticky;top:12px;min-width:0}
@@ -71,8 +73,7 @@ button.link{border:0;background:none;color:var(--muted);text-decoration:underlin
 .paper p{margin:0 0 10px}
 .paper .sigs{display:flex;gap:40px;flex-wrap:wrap;margin-top:28px;break-inside:avoid}
 .paper .sigs>div{flex:1;min-width:200px}
-.paper .sign{font:italic 1.5rem "Brush Script MT","Segoe Script",cursive;min-height:2.4rem;border-bottom:1px solid #161616}
-.paper .blank{min-height:2.4rem;border-bottom:1px solid #161616}
+.paper .blank{min-height:2.8rem;border-bottom:1px solid #161616}
 .paper .cap{display:block;font:.78rem/1.4 var(--sans);color:#444;margin-top:3px}
 .paper .foot{margin-top:auto;padding-top:26px}
 .paper .note{margin:0;padding-top:8px;border-top:1px solid #b8c4c8;font:.72rem/1.45 var(--sans);color:#555}

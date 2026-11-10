@@ -86,6 +86,23 @@
   $('form').addEventListener('input', render);
   $('form').addEventListener('change', render);
 
+  // Light / dark toggle: remembers the choice, otherwise follows the system setting
+  var root = document.documentElement, themeBtn = $('themeBtn'), KEY = 'poa-theme';
+  function applyTheme(t) {
+    root.dataset.theme = t;
+    themeBtn.setAttribute('aria-pressed', String(t === 'dark'));
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', t === 'dark' ? '#17222a' : '#0f5c63');
+  }
+  function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  applyTheme(root.dataset.theme || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  themeBtn.addEventListener('click', function () {
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+  });
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) { if (!stored()) applyTheme(e.matches ? 'dark' : 'light'); });
+
   $('date').value = today();
   refresh(); render();
 })();

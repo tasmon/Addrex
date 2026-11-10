@@ -7,6 +7,7 @@
 <title>Proof of Address Letter Generator</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>(function(){try{var t=localStorage.getItem("poa-theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}})();</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,6 +18,10 @@
       <h1>Proof of address letter</h1>
       <p>Write a clear declaration of residence. Everything stays in your browser.</p>
     </div>
+    <button type="button" id="themeBtn" class="theme" aria-pressed="false">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" fill="currentColor"/></svg>
+      Dark mode
+    </button>
   </div>
 </header>
 
@@ -103,6 +108,7 @@
     </details>
 
     <button type="reset" class="link">Clear the form</button>
+    <p class="credit"><a href="https://tasmon.github.io/Addrex" target="_blank" rel="noopener noreferrer">https://tasmon.github.io/Addrex</a></p>
   </form>
 
   <section class="desk">

@@ -90,8 +90,8 @@
     secs.forEach(function (s, i) { s.h = (i + 1) + '. ' + s.h; });
     secs.push({ h: 'Declaration', paras: ['I declare that the information in this letter is true and correct to the best of my knowledge.'] });
 
-    var sigs = [{ sign: d.name || '', caption: ['Declarant', d.name || 'Printed name', 'Date: ' + fmtDate(d.date)] }];
-    if (landlord) sigs.push({ sign: '', caption: [d.lrel || 'Landlord', d.lname || 'Printed name', 'Date: ____________________'] });
+    var sigs = [{ caption: ['Declarant', d.name || 'Printed name', 'Date: ' + fmtDate(d.date)] }];
+    if (landlord) sigs.push({ caption: [d.lrel || 'Landlord', d.lname || 'Printed name', 'Date: ____________________'] });
 
     return {
       ref: d.ref,
@@ -124,7 +124,7 @@
       h += '</section>';
     });
     h += '<div class="sigs">' + doc.sigs.map(function (g) {
-      return '<div><div class="' + (g.sign ? 'sign' : 'blank') + '">' + esc(g.sign) + '</div><span class="cap"><b>' + esc(g.caption[0]) + '</b><br>' +
+      return '<div><div class="blank"></div><span class="cap"><b>' + esc(g.caption[0]) + '</b><br>' +
         esc(g.caption[1]) + '<br>' + esc(g.caption[2]) + '</span></div>';
     }).join('') + '</div>';
     return h + '<div class="foot"><p class="note">' + esc(doc.note) + '</p></div>';
@@ -205,7 +205,6 @@
     var colW = (CW - 16) / 2;
     doc.sigs.forEach(function (g, i) {
       var x = M + i * (colW + 16);
-      if (g.sign) { font('times', 'italic', 17, INK); pdf.text(g.sign, x, y + 9); }
       hline(x, x + colW, y + 11, 0.25, INK);
       font('helvetica', 'bold', 8.5, GREY); pdf.text(g.caption[0], x, y + 16);
       font('helvetica', 'normal', 8.5, INK); pdf.text(g.caption[1], x, y + 20.3); pdf.text(g.caption[2], x, y + 24.6);
@@ -288,7 +287,7 @@
     });
     B += para('', { after: 200 });
     var cells = doc.sigs.map(function (g) {
-      return (g.sign ? para(run(g.sign, { font: 'Brush Script MT', i: 1, sz: 40 }), { bdr: SB, after: 60 }) : para('', { bdr: SB, before: 270, after: 60 })) +
+      return para('', { bdr: SB, before: 480, after: 60 }) +
         para(run(g.caption[0], { font: 'Calibri', b: 1, sz: 17, color: G }), { after: 0 }) +
         para(run(g.caption[1], { font: 'Calibri', sz: 17 }), { after: 0 }) +
         para(run(g.caption[2], { font: 'Calibri', sz: 17 }), { after: 0 });
