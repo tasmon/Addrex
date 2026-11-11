@@ -91,9 +91,13 @@ The core file also works in Node (`require('./poa-core.js')`), which is handy fo
 - Signature lines are left blank on purpose. Print the letter and sign it by hand. There is no digital signature.
 - Data is not saved between visits. Reloading the page clears the form.
 
+## Troubleshooting
+
+**"The PDF library could not be loaded"**: `vendor/jspdf.umd.min.js` was not found. Make sure the `vendor` folder is uploaded next to `index.html` (check it is not excluded by `.gitignore` or a zip tool), then reload. You can confirm in the browser's developer tools, where the Network tab shows a 404 for that file. The DOCX download works either way.
+
 ## Privacy
 
-All processing happens locally in your browser. The form data, including ID numbers and contact details, is never sent anywhere. The app loads no external scripts, fonts or analytics.
+All processing happens locally in your browser. The form data, including ID numbers and contact details, is never sent anywhere. The app loads no fonts or analytics. Its only script dependency, jsPDF, is bundled in `vendor/`. If that file cannot be found, the app tries the same folder and then, as a last resort, a copy from the jsDelivr CDN.
 
 ## Responsible use
 

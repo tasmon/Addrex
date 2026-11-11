@@ -67,12 +67,35 @@
     ['line1','line2','city','region','postcode','country'].forEach(function (k) { $('p' + k).value = $(k).value; });
     render();
   });
+  // PDF library: use the page's copy if loaded, else try vendor/, the same folder, then a CDN as a last resort
+  var PDF_SOURCES = ['vendor/jspdf.umd.min.js', 'jspdf.umd.min.js', 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js'];
+  function hasPdf() { return !!(window.jspdf && window.jspdf.jsPDF); }
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script');
+      el.src = src; el.onload = resolve; el.onerror = reject;
+      document.head.appendChild(el);
+    });
+  }
+  var pdfPromise = null;
+  function ensurePdf() {
+    if (hasPdf()) return Promise.resolve(window.jspdf.jsPDF);
+    if (!pdfPromise) {
+      pdfPromise = PDF_SOURCES.reduce(function (p, src) {
+        return p.catch(function () { return loadScript(src).then(function () { if (!hasPdf()) throw new Error('bad library'); }); });
+      }, Promise.reject()).then(function () { return window.jspdf.jsPDF; }, function (e) { pdfPromise = null; throw e; });
+    }
+    return pdfPromise;
+  }
+
   $('btnPdf').addEventListener('click', function () {
     var doc = prepare(); if (!doc) return;
-    var J = window.jspdf && window.jspdf.jsPDF;
-    if (!J) { msg.textContent = 'The PDF library did not load. Please download the DOCX instead.'; return; }
     if (!POA.pdfSupports(doc)) { msg.textContent = 'This PDF builder cannot embed some characters you typed (for example Bangla or Arabic). Please download the DOCX instead.'; return; }
-    POA.toPDF(doc, J).save('Proof-of-Address-' + doc.ref + '.pdf');
+    ensurePdf().then(function (J) {
+      POA.toPDF(doc, J).save('Proof-of-Address-' + doc.ref + '.pdf');
+    }, function () {
+      msg.textContent = 'The PDF library could not be loaded. Check that the vendor folder (with jspdf.umd.min.js) sits next to index.html, or download the DOCX instead.';
+    });
   });
   $('btnDocx').addEventListener('click', function () {
     var doc = prepare(); if (!doc) return;
@@ -143,6 +166,7 @@
   $('termsLink').addEventListener('click', function () { openTerms(false); });
   if (termsStored()) accepted = true; else openTerms(true);
 
+  ensurePdf().catch(function () {});             // warm up quietly so the first PDF click is instant
   $('date').value = today();
   refresh(); render();
 })();
