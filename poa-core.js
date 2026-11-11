@@ -46,8 +46,9 @@
       }[active[0]];
     }
     var ph = function (v, t) { return v || '[' + t + ']'; };
-    var cityLine = [d.city, d.region, d.postcode].filter(Boolean).join(', ');
-    var addr = [d.line1, d.line2, cityLine, d.country].filter(Boolean).join('\n');
+    function fmtAddr(a, b, c, r, p, k) { return [a, b, [c, r, p].filter(Boolean).join(', '), k].filter(Boolean).join('\n'); }
+    var addr = fmtAddr(d.line1, d.line2, d.city, d.region, d.postcode, d.country);
+    var permAddr = d.permOn ? fmtAddr(d.pline1, d.pline2, d.pcity, d.pregion, d.ppostcode, d.pcountry) : '';
     var len = duration(d.since, d.date || d.since);
     var landlord = !!(d.lname || d.lmobile || d.lemail);
     var secs = [];
@@ -61,19 +62,19 @@
       ['Email', d.email]
     ]) });
 
-    secs.push({ h: 'Residential address', rows: rows([
+    secs.push({ h: 'Present address', rows: rows([
       ['Address', ph(addr, 'address')],
       ['Resident since', d.since ? fmtDate(d.since) : '[start date]'],
-      ['Length of residence', len],
-      ['Permanent address', d.permSame ? 'Same as residential address' : d.permanent]
+      ['Length of residence', len]
     ]) });
+    if (permAddr) secs.push({ h: 'Permanent address', rows: [['Address', permAddr === addr ? 'Same as present address' : permAddr]] });
 
     if (d.sname || d.smobile || d.semail) {
       secs.push({ h: 'Spouse', rows: rows([['Name', d.sname], ['Mobile', d.smobile], ['Email', d.semail]]) });
     }
 
     var paras = [];
-    if (sc.noContract) paras.push('I live at this address under a verbal agreement with the landlord named in this letter. There is no written tenancy contract.');
+    if (sc.noContract) paras.push('I live at this address under a verbal agreement with ' + (landlord ? 'the landlord named in this letter' : 'my landlord') + '. There is no written tenancy contract.');
     if (sc.noBills) paras.push('I do not hold utility bills, bank statements or similar documents in my name that show this address.' + (d.evidence ? ' Other evidence I can provide: ' + d.evidence + '.' : ''));
     if (sc.host) paras.push('I live with a family member or host, and household bills and agreements are in their name.');
     if (sc.longTerm) paras.push('I have lived at this address' + (d.since && len ? ' since ' + fmtDate(d.since) + ', a period of ' + len : '') + ', and it is my long-term home.');

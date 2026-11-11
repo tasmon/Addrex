@@ -60,21 +60,37 @@
 
     <details class="card" open>
       <summary>Where you live</summary>
-      <label>Address line 1 <input id="line1" autocomplete="address-line1"></label>
-      <label>Address line 2 (optional) <input id="line2" autocomplete="address-line2"></label>
-      <div class="row">
-        <label>City or town <input id="city" autocomplete="address-level2"></label>
-        <label>State or region <input id="region" autocomplete="address-level1"></label>
+      <label class="check"><input type="checkbox" id="permOn"> Add a permanent address (shown next to your present address)</label>
+      <div class="addr-grid" id="addrGrid">
+        <div class="addr" role="group" aria-labelledby="presentTitle">
+          <h3 id="presentTitle">Present address</h3>
+          <label>Address line 1 <input id="line1" autocomplete="address-line1"></label>
+          <label>Address line 2 (optional) <input id="line2" autocomplete="address-line2"></label>
+          <div class="row">
+            <label>City or town <input id="city" autocomplete="address-level2"></label>
+            <label>State or region <input id="region" autocomplete="address-level1"></label>
+          </div>
+          <div class="row">
+            <label>Postal code <input id="postcode" autocomplete="postal-code"></label>
+            <label>Country <input id="country" autocomplete="country-name"></label>
+          </div>
+          <label>Living here since <input id="since" type="date"></label>
+        </div>
+        <div class="addr" id="permAddr" role="group" aria-labelledby="permTitle" hidden>
+          <h3 id="permTitle">Permanent address</h3>
+          <label>Address line 1 <input id="pline1"></label>
+          <label>Address line 2 (optional) <input id="pline2"></label>
+          <div class="row">
+            <label>City or town <input id="pcity"></label>
+            <label>State or region <input id="pregion"></label>
+          </div>
+          <div class="row">
+            <label>Postal code <input id="ppostcode"></label>
+            <label>Country <input id="pcountry"></label>
+          </div>
+          <button type="button" id="permCopy" class="link">Copy from present address</button>
+        </div>
       </div>
-      <div class="row">
-        <label>Postal code <input id="postcode" autocomplete="postal-code"></label>
-        <label>Country <input id="country" autocomplete="country-name"></label>
-      </div>
-      <label>Living here since <input id="since" type="date"></label>
-      <label class="check"><input type="checkbox" id="permSame"> Permanent address is the same as above</label>
-      <label id="permWrap">Permanent address (if different)
-        <textarea id="permanent" rows="3"></textarea>
-      </label>
     </details>
 
     <details class="card">
@@ -87,8 +103,8 @@
     </details>
 
     <details class="card" open>
-      <summary>Landlord or householder</summary>
-      <p class="hint" id="lhint">Optional. Add their details if they can confirm you live here. They sign the printed letter.</p>
+      <summary>Landlord or householder (optional)</summary>
+      <p class="hint">Optional. Add their details if they can confirm you live here. If you add them, give a name and a mobile number or email. They sign the printed letter.</p>
       <label>Printed name <input id="lname"></label>
       <div class="row">
         <label>Mobile number <input id="lmobile" type="tel"></label>

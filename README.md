@@ -17,8 +17,9 @@ It does **not** create utility bills, bank statements, tenancy agreements, gover
 - **Live preview** of an A4 letter that updates as you type
 - **Export** to PDF (selectable text, page footers) or DOCX (real tables, page numbers). The live app address is printed at the very bottom of every exported page
 - **Scenario selection**: tick any mix of *no utility bills*, *no written contract (verbal agreement)*, *long-term resident* and *living with family or a host*. The letter adds a "Circumstances" section, adapts its subtitle and landlord wording, and calculates length of residence
-- **Form fields**: full name, date of birth, National ID or passport number, phone, personal email, current address, permanent address, move-in date, spouse (name, mobile, email), landlord or householder (printed name, mobile, email, relationship), recipient, purpose
-- **Landlord confirmation block** with its own signature line, required automatically for verbal agreements and host situations
+- **Form fields**: full name, date of birth, National ID or passport number, phone, personal email, present address and move-in date, optional permanent address (same fields as the present address), spouse (name, mobile, email), landlord or householder (printed name, mobile, email, relationship), recipient, purpose
+- **Present and permanent address** share the same fields. Ticking "Add a permanent address" shows the two sections side by side, with a button to copy the present address across
+- **Optional landlord confirmation block** with its own signature line. Leave it empty and the letter omits it. If you fill it in, a name plus a mobile number or email is required
 - **Automatic reference number** in the form `POA-YYYYMMDD-HHMMSS`, refreshed on every export or print
 - **Validation** for required fields, email format and move-in dates in the future
 - Responsive layout, dark mode, keyboard-friendly, print stylesheet

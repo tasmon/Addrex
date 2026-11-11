@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var textIds = ['name','dob','idType','idNumber','phone','email','line1','line2','city','region','postcode','country','since','permanent','sname','smobile','semail','lname','lmobile','lemail','lrel','recipient','purpose','date','evidence'];
+  var textIds = ['name','dob','idType','idNumber','phone','email','line1','line2','city','region','postcode','country','since','pline1','pline2','pcity','pregion','ppostcode','pcountry','sname','smobile','semail','lname','lmobile','lemail','lrel','recipient','purpose','date','evidence'];
   var emailIds = ['email','semail','lemail'];
   var state = { ref: '', stamp: '' };
   var msg = $('msg'), letter = $('letter');
@@ -12,7 +12,7 @@
     return { noBills: $('sc-noBills').checked, noContract: $('sc-noContract').checked, longTerm: $('sc-longTerm').checked, host: $('sc-host').checked };
   }
   function data() {
-    var d = { scenarios: scenarios(), permSame: $('permSame').checked, ref: state.ref, stamp: state.stamp };
+    var d = { scenarios: scenarios(), permOn: $('permOn').checked, ref: state.ref, stamp: state.stamp };
     textIds.forEach(function (id) { d[id] = g(id); });
     return d;
   }
@@ -21,15 +21,13 @@
     state.ref = POA.makeRef(now); state.stamp = POA.fmtStamp(now);
     $('ref').value = state.ref;
   }
-  function landlordRequired() { var s = scenarios(); return s.noContract || s.host; }
 
   function sync() {
     $('evidenceWrap').hidden = !$('sc-noBills').checked;
-    $('permanent').disabled = $('permSame').checked;
-    $('permWrap').style.opacity = $('permSame').checked ? .5 : 1;
-    $('lhint').textContent = landlordRequired()
-      ? 'Required for your situation. Add their name and a mobile number or email so the letter can be verified. They sign the printed letter.'
-      : 'Optional. Add their details if they can confirm you live here. They sign the printed letter.';
+    var on = $('permOn').checked;
+    $('permAddr').hidden = !on;
+    $('addrGrid').classList.toggle('two', on);
+    document.querySelector('.layout').classList.toggle('wide', on);
   }
   function render() { sync(); letter.innerHTML = POA.toHTML(POA.buildDoc(data())); }
 
@@ -38,8 +36,9 @@
     document.querySelectorAll('.bad').forEach(function (n) { n.classList.remove('bad'); });
     function need(id, label) { if (!g(id)) { $(id).classList.add('bad'); missing.push(label); } }
     need('name', 'full name'); need('line1', 'address line 1'); need('city', 'city'); need('country', 'country'); need('since', 'living here since');
+    if ($('permOn').checked) { need('pline1', 'permanent address line 1'); need('pcity', 'permanent city'); need('pcountry', 'permanent country'); }
     var any = g('lname') || g('lmobile') || g('lemail');
-    if (landlordRequired() || any) {
+    if (any) {                                   // the landlord section is optional, but a partial entry must be usable
       need('lname', 'landlord name');
       if (!g('lmobile') && !g('lemail')) { $('lmobile').classList.add('bad'); $('lemail').classList.add('bad'); missing.push('landlord mobile or email'); }
     }
@@ -63,6 +62,11 @@
     return POA.buildDoc(data());
   }
 
+  $('permOn').addEventListener('change', function () { if (this.checked) $('pline1').focus(); });
+  $('permCopy').addEventListener('click', function () {
+    ['line1','line2','city','region','postcode','country'].forEach(function (k) { $('p' + k).value = $(k).value; });
+    render();
+  });
   $('btnPdf').addEventListener('click', function () {
     var doc = prepare(); if (!doc) return;
     var J = window.jspdf && window.jspdf.jsPDF;

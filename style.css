@@ -24,7 +24,7 @@ body{margin:0;background:var(--desk);color:var(--ink);font:15px/1.5 var(--sans)}
 .card>summary::-webkit-details-marker{display:none}
 .card>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
 .card[open]>summary::after{transform:rotate(-135deg)}
-.card>label,.card>.row,.card>.tiles{margin-top:10px}
+.card>label,.card>.row,.card>.tiles,.card>.addr-grid{margin-top:10px}
 .card>.hint{margin:0}
 
 label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);flex:1;min-width:0}
@@ -38,6 +38,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);flex:none}
 .check input{width:auto}
 
+.addr-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.addr-grid.two{grid-template-columns:1fr 1fr}
+.addr{display:flex;flex-direction:column;gap:10px;min-width:0}
+.addr h3{margin:0;font-size:.9rem;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.addr-grid.two .row{flex-direction:column}
+.layout{transition:grid-template-columns .2s}
+.layout.wide{grid-template-columns:minmax(320px,620px) 1fr}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{flex-direction:row;align-items:flex-start;gap:9px;padding:10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--muted);font-size:.8rem;line-height:1.35}
 .tile input{width:auto;margin-top:2px;accent-color:var(--accent)}
@@ -91,13 +98,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .paper .note{margin:0;padding-top:8px;border-top:1px solid #b8c4c8;font:.72rem/1.45 var(--sans);color:#555}
 .paper .empty{color:#9a9a9a}
 
+@media (max-width:1099px){.layout.wide{grid-template-columns:minmax(320px,540px) 1fr}}
 @media (max-width:900px){
-  .layout{grid-template-columns:1fr;padding:14px}
+  .layout,.layout.wide{grid-template-columns:1fr;padding:14px}
   .desk{position:static}.desk .paper{max-height:none}
   .paper{padding:26px 20px;min-height:0}
   .paper .head{flex-direction:column}.paper .meta{text-align:left}
   .paper dl{grid-template-columns:110px 1fr}
 }
+@media (max-width:560px){.addr-grid.two{grid-template-columns:1fr}}
 @media (max-width:480px){.tiles,.row{grid-template-columns:1fr;flex-direction:column}}
 @media print{
   body{background:#fff}
