@@ -68,12 +68,30 @@ dialog#terms::backdrop{background:rgba(8,16,22,.72)}
 dialog#terms.fallback{position:fixed;inset:0;margin:auto;height:fit-content;z-index:100}
 dialog#terms h2{margin:0;font-size:1.3rem}
 dialog#terms p{margin:0}
+dialog#sigDlg{width:min(640px,calc(100% - 24px));max-height:calc(100% - 24px);padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35);flex-direction:column;gap:12px}
+dialog#sigDlg[open]{display:flex}
+dialog#sigDlg::backdrop{background:rgba(8,16,22,.72)}
+dialog#sigDlg.fallback{position:fixed;inset:0;margin:auto;height:fit-content;z-index:100}
+dialog#sigDlg h2{margin:0;font-size:1.3rem}
+dialog#sigDlg p{margin:0}
 .terms-body{flex:1 1 auto;min-height:120px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:4px 14px 10px;font-size:.9rem}
 .terms-body h3{margin:14px 0 4px;font-size:.95rem}
 .terms-body p{color:var(--muted);margin:0 0 6px}
 .dialog-actions{display:flex;justify-content:flex-end}
 button:disabled{opacity:.5;cursor:not-allowed}
 .check input:disabled+*{opacity:.6}
+
+/* Signature tool */
+.sig-thumb,.checker{background:repeating-conic-gradient(#d9e0e4 0% 25%,#fff 0% 50%) 50%/16px 16px;border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;justify-content:center;align-items:center}
+.sig-thumb img{max-width:100%;max-height:90px}
+.checker canvas{max-width:100%;max-height:170px}
+.sig-work{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.sig-pane{min-width:0;display:flex;justify-content:center}
+#sigCrop{max-width:100%;touch-action:none;border:1px solid var(--line);border-radius:6px;background:#eee}
+.sig-controls{display:flex;flex-direction:column;gap:10px}
+.sig-tools{align-items:center;flex-wrap:wrap}
+.swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--line);flex:none}
+@media (max-width:640px){.sig-work{grid-template-columns:1fr}}
 
 /* Letter */
 .paper{background:#fff;color:#161616;font-family:var(--serif);font-size:15px;line-height:1.55;max-width:794px;min-height:1000px;margin:0 auto;padding:52px 60px 36px;box-shadow:0 1px 2px rgba(0,0,0,.2),0 14px 34px rgba(0,0,0,.16);display:flex;flex-direction:column}
@@ -90,9 +108,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .paper dt{font:600 .82rem var(--sans);color:#555;padding-top:2px}
 .paper dd{margin:0}
 .paper p{margin:0 0 10px}
-.paper .sigs{display:flex;gap:40px;flex-wrap:wrap;margin-top:28px;break-inside:avoid}
+.paper .sigs{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-end;margin-top:28px;break-inside:avoid}
 .paper .sigs>div{flex:1;min-width:200px}
-.paper .blank{min-height:2.8rem;border-bottom:1px solid #161616}
+.paper .blank{min-height:2.8rem;display:flex;align-items:flex-end;border-bottom:1px solid #161616}
+.paper .sigimg{max-height:56px;max-width:100%;display:block;margin-bottom:1px}
 .paper .cap{display:block;font:.78rem/1.4 var(--sans);color:#444;margin-top:3px}
 .paper .foot{margin-top:auto;padding-top:26px}
 .paper .note{margin:0;padding-top:8px;border-top:1px solid #b8c4c8;font:.72rem/1.45 var(--sans);color:#555}

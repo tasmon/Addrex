@@ -4,6 +4,7 @@
   var textIds = ['name','dob','idType','idNumber','phone','email','line1','line2','city','region','postcode','country','since','pline1','pline2','pcity','pregion','ppostcode','pcountry','sname','smobile','semail','lname','lmobile','lemail','lrel','recipient','purpose','date','evidence'];
   var emailIds = ['email','semail','lemail'];
   var state = { ref: '', stamp: '' };
+  var sig = null;                      // attached signature image: { data, w, h }
   var msg = $('msg'), letter = $('letter');
 
   function g(id) { return $(id).value.trim(); }
@@ -12,7 +13,7 @@
     return { noBills: $('sc-noBills').checked, noContract: $('sc-noContract').checked, longTerm: $('sc-longTerm').checked, host: $('sc-host').checked };
   }
   function data() {
-    var d = { scenarios: scenarios(), permOn: $('permOn').checked, ref: state.ref, stamp: state.stamp };
+    var d = { scenarios: scenarios(), permOn: $('permOn').checked, signature: sig, ref: state.ref, stamp: state.stamp };
     textIds.forEach(function (id) { d[id] = g(id); });
     return d;
   }
@@ -62,6 +63,25 @@
     return POA.buildDoc(data());
   }
 
+  // Signature image: attach, crop and clean up in the editor dialog
+  function showSig() {
+    $('sigThumbWrap').hidden = $('sigRemove').hidden = !sig;
+    $('sigPick').textContent = sig ? 'Replace signature image' : 'Attach signature image';
+    if (sig) $('sigThumb').src = sig.data;
+  }
+  $('sigPick').addEventListener('click', function () { $('sigFile').click(); });
+  $('sigFile').addEventListener('change', function () {
+    var f = this.files && this.files[0]; this.value = '';
+    if (!f) return;
+    if (!window.SigTool) { msg.textContent = 'The signature tool did not load. Check that signature.js sits next to index.html.'; return; }
+    msg.textContent = '';
+    SigTool.edit(f, function (res, err) {
+      if (err) { msg.textContent = err; return; }
+      if (res) { sig = res; showSig(); render(); }
+    });
+  });
+  $('sigRemove').addEventListener('click', function () { sig = null; showSig(); render(); });
+
   $('permOn').addEventListener('change', function () { if (this.checked) $('pline1').focus(); });
   $('permCopy').addEventListener('click', function () {
     ['line1','line2','city','region','postcode','country'].forEach(function (k) { $('p' + k).value = $(k).value; });
@@ -102,7 +122,7 @@
     save(new Blob([POA.toDOCX(doc)], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), 'Proof-of-Address-' + doc.ref + '.docx');
   });
   $('form').addEventListener('reset', function () {
-    setTimeout(function () { $('date').value = today(); msg.textContent = ''; document.querySelectorAll('.bad').forEach(function (n) { n.classList.remove('bad'); }); refresh(); render(); }, 0);
+    setTimeout(function () { sig = null; showSig(); $('date').value = today(); msg.textContent = ''; document.querySelectorAll('.bad').forEach(function (n) { n.classList.remove('bad'); }); refresh(); render(); }, 0);
   });
   $('form').addEventListener('input', render);
   $('form').addEventListener('change', render);

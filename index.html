@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>(function(){try{var t=localStorage.getItem("poa-theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}})();</script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header class="bar">
@@ -114,6 +114,17 @@
     </details>
 
     <details class="card">
+      <summary>Signature image (optional)</summary>
+      <p class="hint">Attach a photo or scan of your signature. You can crop it and remove the background. It is placed on the declarant's signature line. Leave it empty to sign by hand after printing. The image stays in your browser.</p>
+      <div class="sig-thumb" id="sigThumbWrap" hidden><img id="sigThumb" alt="Your attached signature"></div>
+      <div class="row">
+        <button type="button" id="sigPick">Attach signature image</button>
+        <button type="button" id="sigRemove" class="link" hidden>Remove</button>
+      </div>
+      <input type="file" id="sigFile" accept="image/png,image/jpeg,image/webp" hidden>
+    </details>
+
+    <details class="card">
       <summary>Letter details</summary>
       <label>Addressed to (optional) <input id="recipient" placeholder="To whom it may concern"></label>
       <label>Purpose (optional) <input id="purpose" placeholder="e.g. opening a bank account"></label>
@@ -136,6 +147,29 @@
     <article id="letter" class="paper" aria-label="Letter preview"></article>
   </section>
 </main>
+
+<dialog id="sigDlg" aria-labelledby="sigTitle">
+  <h2 id="sigTitle">Prepare your signature</h2>
+  <p class="hint">Drag on the left image to draw, move or resize the crop box (arrow keys also work). The right side shows the result, with the checkerboard standing for transparent areas.</p>
+  <div class="sig-work">
+    <div class="sig-pane"><canvas id="sigCrop" tabindex="0" aria-label="Crop area. Use the arrow keys to move the crop box, Shift and the arrow keys to resize it."></canvas></div>
+    <div class="sig-pane"><div class="checker"><canvas id="sigOut" aria-label="Signature preview"></canvas></div></div>
+  </div>
+  <div class="sig-controls">
+    <label class="check"><input type="checkbox" id="sigBg" checked> Remove background</label>
+    <label>Background sensitivity <input type="range" id="sigTol" min="5" max="120" value="40"></label>
+    <label>Ink colour
+      <select id="sigInk"><option value="keep">Keep original colour</option><option value="black">Black</option><option value="blue">Dark blue</option></select>
+    </label>
+    <div class="row sig-tools">
+      <button type="button" id="sigPickBg">Pick background colour</button><span id="sigSwatch" class="swatch" title="Background colour in use"></span>
+      <button type="button" id="sigFit">Fit crop to signature</button>
+      <button type="button" id="sigReset" class="link">Reset crop</button>
+    </div>
+  </div>
+  <p id="sigMsg" class="msg" role="alert"></p>
+  <div class="dialog-actions"><button type="button" id="sigCancel">Cancel</button><button type="button" id="sigApply" class="primary">Use this signature</button></div>
+</dialog>
 
 <dialog id="terms" aria-labelledby="termsTitle" aria-describedby="termsHint">
   <h2 id="termsTitle">Terms of use</h2>
@@ -161,8 +195,9 @@
   <div class="dialog-actions"><button type="button" id="termsAccept" class="primary" disabled>Accept and continue</button></div>
 </dialog>
 
-<script src="vendor/jspdf.umd.min.js"></script>
-<script src="poa-core.js"></script>
-<script src="script.js"></script>
+<script src="vendor/jspdf.umd.min.js?v=5"></script>
+<script src="poa-core.js?v=5"></script>
+<script src="signature.js?v=5"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>

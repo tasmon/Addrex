@@ -25,7 +25,7 @@ It does **not** create utility bills, bank statements, tenancy agreements, gover
 - Responsive layout, dark mode, keyboard-friendly, print stylesheet
 - Manual **light/dark mode** toggle that remembers your choice (follows your system setting until you pick)
 - **Terms of use** dialog on first visit: the user must scroll to the end and accept before using the app (the acceptance is remembered in the browser)
-- Blank signature lines on the letter, for signing by hand after printing
+- **Signature image (optional)**: attach a photo or scan, crop it with a draggable box, remove the background (adjustable sensitivity, optional colour picker, ink colour) and place it on the signature line in the preview, PDF and DOCX. With no image, the lines stay blank for signing by hand
 - Site icon (`favicon.svg` and an Apple touch icon)
 
 Live app: https://tasmon.github.io/Addrex
@@ -54,7 +54,8 @@ It is a static site, so it works on **GitHub Pages**, Vercel, Netlify or any sta
 ├── index.html               # Page markup and form
 ├── style.css                # UI styles, letter styles, print styles
 ├── script.js                # Form handling, validation, export buttons
-├── poa-core.js              # Document model and exporters (HTML, text, PDF, DOCX)
+├── poa-core.js              # Document model and exporters (HTML preview, PDF, DOCX)
+├── signature.js             # Signature image tool: crop and background removal
 ├── favicon.svg              # Site icon
 ├── apple-touch-icon.png     # Icon for iOS home screens
 └── vendor/
@@ -97,7 +98,7 @@ The core file also works in Node (`require('./poa-core.js')`), which is handy fo
 
 ## Privacy
 
-All processing happens locally in your browser. The form data, including ID numbers and contact details, is never sent anywhere. The app loads no fonts or analytics. Its only script dependency, jsPDF, is bundled in `vendor/`. If that file cannot be found, the app tries the same folder and then, as a last resort, a copy from the jsDelivr CDN.
+All processing happens locally in your browser. The form data, including ID numbers, contact details and any signature image, is never sent anywhere. The app loads no fonts or analytics. Its only script dependency, jsPDF, is bundled in `vendor/`. If that file cannot be found, the app tries the same folder and then, as a last resort, a copy from the jsDelivr CDN.
 
 ## Responsible use
 

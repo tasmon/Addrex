@@ -92,7 +92,7 @@
     secs.forEach(function (s, i) { s.h = (i + 1) + '. ' + s.h; });
     secs.push({ h: 'Declaration', paras: ['I declare that the information in this letter is true and correct to the best of my knowledge.'] });
 
-    var sigs = [{ caption: ['Declarant', d.name || 'Printed name', 'Date: ' + fmtDate(d.date)] }];
+    var sigs = [{ caption: ['Declarant', d.name || 'Printed name', 'Date: ' + fmtDate(d.date)], img: d.signature || null }];
     if (landlord) sigs.push({ caption: [d.lrel || 'Landlord', d.lname || 'Printed name', 'Date: ____________________'] });
 
     return {
@@ -127,7 +127,7 @@
       h += '</section>';
     });
     h += '<div class="sigs">' + doc.sigs.map(function (g) {
-      return '<div><div class="blank"></div><span class="cap"><b>' + esc(g.caption[0]) + '</b><br>' +
+      return '<div><div class="blank">' + (g.img ? '<img class="sigimg" alt="Signature" src="' + esc(g.img.data) + '">' : '') + '</div><span class="cap"><b>' + esc(g.caption[0]) + '</b><br>' +
         esc(g.caption[1]) + '<br>' + esc(g.caption[2]) + '</span></div>';
     }).join('') + '</div>';
     return h + '<div class="foot"><p class="note">' + esc(doc.note) + '</p></div>';
@@ -188,10 +188,19 @@
     });
 
     // signatures
-    need(42); y += 8;
+    var hasImg = doc.sigs.some(function (g) { return g.img; });
+    font('helvetica', 'normal', 7.5, GREY);
+    var nl = lines(doc.note, CW);
+    need(42 + (hasImg ? 5 : 0) + nl.length * lh(7.5) + 8);   // keep signatures and the note on the same page
+    y += 8 + (hasImg ? 5 : 0);
     var colW = (CW - 16) / 2;
     doc.sigs.forEach(function (g, i) {
       var x = M + i * (colW + 16);
+      if (g.img) {
+        var ar = g.img.w / g.img.h, hh = 13, ww = hh * ar, mw = Math.min(colW - 2, 65);
+        if (ww > mw) { ww = mw; hh = ww / ar; }
+        pdf.addImage(g.img.data, 'PNG', x + 1, y + 10.6 - hh, ww, hh);
+      }
       hline(x, x + colW, y + 11, 0.25, INK);
       font('helvetica', 'bold', 8.5, GREY); pdf.text(g.caption[0], x, y + 16);
       font('helvetica', 'normal', 8.5, INK); pdf.text(g.caption[1], x, y + 20.3); pdf.text(g.caption[2], x, y + 24.6);
@@ -200,7 +209,6 @@
 
     // note
     font('helvetica', 'normal', 7.5, GREY);
-    var nl = lines(doc.note, CW);
     need(nl.length * lh(7.5) + 6);
     hline(M, W - M, y, 0.2, RULE); pdf.text(nl, M, y + 4.5);
 
@@ -240,21 +248,38 @@
     if (o.jc) pp += '<w:jc w:val="' + o.jc + '"/>';
     return '<w:p><w:pPr>' + pp + '</w:pPr>' + (runs || '') + '</w:p>';
   }
-  function tbl(rows, widths) {
+  function tbl(rows, widths, valign) {
     var total = widths.reduce(function (a, b) { return a + b; }, 0);
     return '<w:tbl><w:tblPr><w:tblW w:w="' + total + '" w:type="dxa"/><w:tblLayout w:type="fixed"/>' +
       '<w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>' +
       widths.map(function (w) { return '<w:gridCol w:w="' + w + '"/>'; }).join('') + '</w:tblGrid>' +
       rows.map(function (cells) {
         return '<w:tr><w:trPr><w:cantSplit/></w:trPr>' + cells.map(function (c, i) {
-          return '<w:tc><w:tcPr><w:tcW w:w="' + widths[i] + '" w:type="dxa"/></w:tcPr>' + c + '</w:tc>';
+          return '<w:tc><w:tcPr><w:tcW w:w="' + widths[i] + '" w:type="dxa"/>' + (valign ? '<w:vAlign w:val="' + valign + '"/>' : '') + '</w:tcPr>' + c + '</w:tc>';
         }).join('') + '</w:tr>';
       }).join('') + '</w:tbl>';
   }
 
   var NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
 
+  function b64ToBytes(dataUrl) {
+    var bin = atob(dataUrl.split(',')[1]), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  function imgRun(img) {    // inline picture, fitted into a 13 mm x 65 mm box
+    var ar = img.w / img.h, h = 13, w = h * ar;
+    if (w > 65) { w = 65; h = w / ar; }
+    var cx = Math.round(w * 36000), cy = Math.round(h * 36000);
+    return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="' + cx + '" cy="' + cy + '"/>' +
+      '<wp:docPr id="1" name="Signature" descr="Signature"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+      '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+      '<pic:nvPicPr><pic:cNvPr id="0" name="signature.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId3"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
+      '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+  }
+
   function docxFiles(doc) {
+    var sigImg = (doc.sigs.filter(function (g) { return g.img; })[0] || {}).img || null;
     var T = '1C3B40', G = '555555', B = '';
     var sans = { font: 'Calibri' };
     var DB = '<w:bottom w:val="double" w:sz="6" w:space="6" w:color="' + T + '"/>';
@@ -275,17 +300,19 @@
       (s.paras || []).forEach(function (p) { B += para(run(p), { before: s.rows && s.rows.length ? 100 : 0, after: 100 }); });
     });
     B += para('', { after: 200 });
-    var cells = doc.sigs.map(function (g) {
-      return para('', { bdr: SB, before: 480, after: 60 }) +
-        para(run(g.caption[0], { font: 'Calibri', b: 1, sz: 17, color: G }), { after: 0 }) +
+    var empty = para('', { after: 0 });
+    var lines = doc.sigs.map(function (g) {
+      return para(g.img ? imgRun(g.img) : '', { bdr: SB, before: g.img ? 0 : 480, after: 60, keepNext: 1 });
+    });
+    var caps = doc.sigs.map(function (g) {
+      return para(run(g.caption[0], { font: 'Calibri', b: 1, sz: 17, color: G }), { after: 0 }) +
         para(run(g.caption[1], { font: 'Calibri', sz: 17 }), { after: 0 }) +
         para(run(g.caption[2], { font: 'Calibri', sz: 17 }), { after: 0 });
     });
-    var empty = para('', { after: 0 });
-    B += tbl([[cells[0], empty, cells[1] || empty]], [4400, 838, 4400]);
+    B += tbl([[lines[0], empty, lines[1] || empty], [caps[0], empty, caps[1] || empty]], [4400, 838, 4400], 'bottom');
     B += para(run(doc.note, { font: 'Calibri', sz: 15, color: G }), { bdr: '<w:top w:val="single" w:sz="4" w:space="6" w:color="B8C4C8"/>', before: 560, after: 0 });
 
-    var documentXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ' + NS + '><w:body>' + B +
+    var documentXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ' + NS + ' xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>' + B +
       '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/>' +
       '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>';
 
@@ -301,15 +328,17 @@
       '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>';
 
     var rel = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-    return [
-      { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>' },
+    var files = [
+      { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>' },
       { name: '_rels/.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/officeDocument" Target="word/document.xml"/></Relationships>' },
-      { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/styles" Target="styles.xml"/><Relationship Id="rId2" Type="' + rel + '/footer" Target="footer1.xml"/></Relationships>' },
+      { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/styles" Target="styles.xml"/><Relationship Id="rId2" Type="' + rel + '/footer" Target="footer1.xml"/>' + (sigImg ? '<Relationship Id="rId3" Type="' + rel + '/image" Target="media/signature.png"/>' : '') + '</Relationships>' },
       { name: 'word/document.xml', data: documentXml },
       { name: 'word/styles.xml', data: stylesXml },
       { name: 'word/footer1.xml', data: footerXml },
       { name: 'word/_rels/footer1.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/hyperlink" Target="' + xe(doc.appUrl) + '" TargetMode="External"/></Relationships>' }
     ];
+    if (sigImg) files.push({ name: 'word/media/signature.png', data: b64ToBytes(sigImg.data) });
+    return files;
   }
 
   var CRC = (function () {
@@ -322,7 +351,7 @@
   function zip(files) {
     var enc = new TextEncoder(), parts = [], central = [], offset = 0;
     files.forEach(function (f) {
-      var name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+      var name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : f.data, crc = crc32(data);
       var lh = new DataView(new ArrayBuffer(30));
       lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(12, 0x21, true);
       lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true);
